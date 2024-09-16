@@ -24,4 +24,8 @@ if __name__ == '__main__':
   db_collection = os.getenv('DB_PDC_EXTRACTOR_COLLECTION')
 
   audit = Audit(db_url, db_name, db_collection)
-  print(audit.get_audits(query))
+
+  # print(audit.count(query))
+  # print(audit.find(query))
+
+
