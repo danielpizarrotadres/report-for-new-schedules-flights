@@ -12,8 +12,8 @@ class Audit :
     self.db_name = db_name
     self.db_collection = db_collection
 
-    def get_audits(self, criteria):
-      client = MongoClient(self.db_url)
-      db = client[db.db_name]
-      collection = db[db.db_collection]
-      return collection.count_documents(criteria)
+  def get_audits(self, criteria):
+    client = MongoClient(self.db_url)
+    db = client[self.db_name]
+    collection = db[self.db_collection]
+    return collection.count_documents(criteria)
