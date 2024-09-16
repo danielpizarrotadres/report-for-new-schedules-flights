@@ -21,4 +21,5 @@ class Audit :
     client = MongoClient(self.db_url)
     db = client[self.db_name]
     collection = db[self.db_collection]
-    return list(collection.find(criteria).sort('createdAt', 1).limit(1))
+    # return list(collection.find(criteria).sort('createdAt', 1).limit(1))
+    return list(collection.find(criteria).sort('createdAt', 1))
