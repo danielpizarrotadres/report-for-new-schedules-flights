@@ -120,7 +120,7 @@ if __name__ == '__main__':
       continue
 
     for j, element in enumerate(audits_belonging_pdc):
-      print(f'Processing audit_belonging_pdc {j + 1} of {len(audits_belonging_pdc)}')
+      print(f'Processing audit_belonging_pdc {j + 1} / {element.get('_id')} of {len(audits_belonging_pdc)}')
 
       affectations_belonging_audit = find_affected_flights(affectations, element)
       print(f"Total affectations_belonging_audit found: {len(affectations_belonging_audit)}")
