@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from audits import Audit
 from pdc import Pdc
+from affectations import Affectation
 from dotenv import load_dotenv
 import pandas as pd
 
