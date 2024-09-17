@@ -6,6 +6,11 @@ from affectations import Affectation
 from dotenv import load_dotenv
 import pandas as pd
 
+green = "\033[92m"
+reset = "\033[0m"
+red = "\033[91m"
+yellow = "\033[93m"
+
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 db_url = os.getenv('DB_PDC_EXTRACTOR_URL')
@@ -27,13 +32,13 @@ def find_audits(audits, criteria):
   return audits_found
 
 if __name__ == '__main__':
-  print('Start')
+  print('Starting process ✨🪄')
 
   # Find all audits from 2024-09-14 until 2024-09-17
   audit = Audit(db_url, db_name, db_collection)
   since = datetime(2024, 9, 12, 0, 0, 0)
   until = datetime(2024, 9, 17, 0, 0, 0)
-  print(f"Criteria: {since} -> {until}")
+  print(f"Criteria to search audits through mongo: {since} -> {until}")
   audits = audit.find({
     "createdAt": {
       "$gte": since,
@@ -80,4 +85,4 @@ if __name__ == '__main__':
   current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
   file_name = f'report_{current_time}.xlsx'
   df.to_excel(file_name, index=False)
-  print(f'Excel file {file_name} created successfully')
+  print(f'Excel file {green}{file_name}{reset} created {green}successfully{reset}')
