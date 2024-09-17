@@ -13,9 +13,9 @@ yellow = "\033[93m"
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(dotenv_path)
-db_url = os.getenv('DB_PDC_EXTRACTOR_URL')
-db_name = os.getenv('DB_PDC_EXTRACTOR_NAME')
-db_collection = os.getenv('DB_PDC_EXTRACTOR_COLLECTION')
+db_url_pdc_extractor = os.getenv('DB_PDC_EXTRACTOR_URL')
+db_name_pdc_extractor = os.getenv('DB_PDC_EXTRACTOR_NAME')
+db_collection_pdc_extractor = os.getenv('DB_PDC_EXTRACTOR_COLLECTION')
 
 def find_audits(audits, criteria):
   audits_found = []
@@ -35,7 +35,7 @@ if __name__ == '__main__':
   print('Starting process ✨🪄')
 
   # Find all audits from 2024-09-14 until 2024-09-17
-  audit = Audit(db_url, db_name, db_collection)
+  audit = Audit(db_url_pdc_extractor, db_name_pdc_extractor, db_collection_pdc_extractor)
   since = datetime(2024, 9, 12, 0, 0, 0)
   until = datetime(2024, 9, 17, 0, 0, 0)
   print(f"Criteria to search audits through mongo: {since} -> {until}")
