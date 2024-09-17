@@ -62,12 +62,12 @@ def find_affected_flights(affectations, criteria):
       id_flight == mapped_id and
       departure_date == criteria.get('departureDate') and
       origin == criteria.get('origin') and
-      old_flight_origin == criteria.get('origin')
-      # old_flight_destination == criteria.get('data', {}).get('oldFlight', {}).get('destination')
-      # old_flight_departure_date == criteria.get('data', {}).get('oldFlight', {}).get('STD')[:10] and
-      # new_flight_origin == criteria.get('destination') and
-      # new_flight_destination == criteria.get('data', {}).get('newFlight', {}).get('destination') and
-      # new_flight_departure_date == criteria.get('data', {}).get('newFlight', {}).get('STD')[:10]
+      old_flight_origin == criteria.get('data', {}).get('oldFlight', {}).get('DEPSTN') and
+      old_flight_destination == criteria.get('data', {}).get('oldFlight', {}).get('ARRSTN') and
+      old_flight_departure_date == criteria.get('data', {}).get('oldFlight', {}).get('STD')[:10] and
+      new_flight_origin == criteria.get('data', {}).get('newFlight', {}).get('DEPSTN') and
+      new_flight_destination == criteria.get('data', {}).get('newFlight', {}).get('ARRSTN') and
+      new_flight_departure_date == criteria.get('data', {}).get('newFlight', {}).get('STD')[:10]
     ):
       flights_found.append(item)
 
@@ -75,7 +75,7 @@ def find_affected_flights(affectations, criteria):
 
 
 if __name__ == '__main__':
-  print('Starting process ✨🪄')
+  print('Starting process')
 
   # Find all audits from 2024-09-14 until 2024-09-17
   audit = Audit(db_url_pdc_extractor, db_name_pdc_extractor, db_collection_pdc_extractor)
