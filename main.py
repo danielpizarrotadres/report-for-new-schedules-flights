@@ -17,19 +17,62 @@ db_url_pdc_extractor = os.getenv('DB_PDC_EXTRACTOR_URL')
 db_name_pdc_extractor = os.getenv('DB_PDC_EXTRACTOR_NAME')
 db_collection_pdc_extractor = os.getenv('DB_PDC_EXTRACTOR_COLLECTION')
 
+db_url_affected_flights_request = os.getenv('DB_AFFECTED_FLIGHTS_REQUEST_URL')
+db_name_affected_flights_request = os.getenv('DB_AFFECTED_FLIGHTS_REQUEST_NAME')
+db_collection_affected_flights_request = os.getenv('DB_AFFECTED_FLIGHTS_REQUEST_COLLECTION')
+
 def find_audits(audits, criteria):
   audits_found = []
   for index, item in enumerate(audits):
     tstamp = item.get('flightUniqueId')[:19]
     action = item.get('actionType')
-    idFlight = item.get('flightId')
+    id_flight = item.get('flightId')
     if (
       tstamp == criteria.get('TSTAMP') and
       action == criteria.get('ACTION') and
-      idFlight == criteria.get('ID')
+      id_flight == criteria.get('ID')
     ):
       audits_found.append(item)
   return audits_found
+
+def find_affected_flights(affectations, criteria):
+  flights_found = []
+  for index, item in enumerate(affectations):
+    id_flight = item.get('flightNumber')
+    departure_date = item.get('departureDate')
+    origin = item.get('origin')
+    # has_manifest = item.get('hasManifest')
+    # pnrs = item.get('affectedPnrs')
+
+    old_flight_origin = item.get('oldFlight', {}).get('origin')
+    old_flight_destination = item.get('oldFlight', {}).get('destination')
+    old_flight_number = item.get('oldFlight', {}).get('flightNumber')
+    old_flight_carrier = item.get('oldFlight', {}).get('carrier')
+    old_flight_departure_date = item.get('oldFlight', {}).get('departureDate')
+
+    new_flight_origin = item.get('newFlight', {}).get('origin')
+    new_flight_destination = item.get('newFlight', {}).get('destination')
+    new_flight_number = item.get('newFlight', {}).get('flightNumber')
+    new_flight_carrier = item.get('newFlight', {}).get('carrier')
+    new_flight_departure_date = item.get('newFlight', {}).get('departureDate')
+
+    mapped_id = int(criteria.get('flightId').split()[1].lstrip('0'))
+
+    if (
+      id_flight == mapped_id and
+      departure_date == criteria.get('departureDate') and
+      origin == criteria.get('origin') and
+      old_flight_origin == criteria.get('origin')
+      # old_flight_destination == criteria.get('data', {}).get('oldFlight', {}).get('destination')
+      # old_flight_departure_date == criteria.get('data', {}).get('oldFlight', {}).get('STD')[:10] and
+      # new_flight_origin == criteria.get('destination') and
+      # new_flight_destination == criteria.get('data', {}).get('newFlight', {}).get('destination') and
+      # new_flight_departure_date == criteria.get('data', {}).get('newFlight', {}).get('STD')[:10]
+    ):
+      flights_found.append(item)
+
+  return flights_found
+
 
 if __name__ == '__main__':
   print('Starting process ✨🪄')
@@ -38,7 +81,7 @@ if __name__ == '__main__':
   audit = Audit(db_url_pdc_extractor, db_name_pdc_extractor, db_collection_pdc_extractor)
   since = datetime(2024, 9, 12, 0, 0, 0)
   until = datetime(2024, 9, 17, 0, 0, 0)
-  print(f"Criteria to search audits through mongo: {since} -> {until}")
+  print(f"Searching audits through mongo: {since} -> {until}")
   audits = audit.find({
     "createdAt": {
       "$gte": since,
@@ -50,6 +93,17 @@ if __name__ == '__main__':
   # Find all audits from PDC database
   pdc = Pdc()
   audits_from_pdc = pdc.find()
+
+  # Find all affected flights from affected-flights-request
+  affectation = Affectation(db_url_affected_flights_request, db_name_affected_flights_request, db_collection_affected_flights_request)
+  print(f"Searching affectations through mongo: {since} -> {until}")
+  affectations = affectation.find({
+    "createdAt": {
+      "$gte": since,
+      "$lte": until
+      }
+  })
+  print(f"Total affectations: {len(affectations)}")
 
   # List to collect all data
   all_data = []
@@ -81,8 +135,12 @@ if __name__ == '__main__':
         '[AUDIT] ID': element.get('_id'),
       })
 
-  df = pd.DataFrame(all_data)
-  current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-  file_name = f'report_{current_time}.xlsx'
-  df.to_excel(file_name, index=False)
-  print(f'Excel file {green}{file_name}{reset} created {green}successfully{reset}')
+      # TODO: Map affected flights with audits and create a report
+      affectations_belonging_audit = find_affected_flights(affectations, element)
+      print(f"Total affectations_belonging_audit found: {len(affectations_belonging_audit)}")
+
+  # df = pd.DataFrame(all_data)
+  # current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+  # file_name = f'report_{current_time}.xlsx'
+  # df.to_excel(file_name, index=False)
+  # print(f'Excel file {green}{file_name}{reset} created {green}successfully{reset}')
