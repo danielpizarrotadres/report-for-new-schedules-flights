@@ -122,25 +122,28 @@ if __name__ == '__main__':
     for j, element in enumerate(audits_belonging_pdc):
       print(f'Processing audit_belonging_pdc {j + 1} of {len(audits_belonging_pdc)}')
 
-      all_data.append({
-        '[PDC] EMPLOYEE': item.get('EMPLOYEE'),
-        '[PDC] TSTAMP': item.get('TSTAMP'),
-        '[PDC] ID': item.get('ID'),
-        '[PDC] IDDATE': item.get('IDDATE'),
-        '[PDC] ACTION': item.get('ACTION'),
-        '[AUDIT] ORIGIN': element.get('origin'),
-        '[AUDIT] DESTINATION': element.get('destination'),
-        '[AUDIT] FLIGHT ID': element.get('flightId'),
-        '[AUDIT] DEPARTURE DATE': element.get('departureDate'),
-        '[AUDIT] ID': element.get('_id'),
-      })
-
-      # TODO: Map affected flights with audits and create a report
       affectations_belonging_audit = find_affected_flights(affectations, element)
       print(f"Total affectations_belonging_audit found: {len(affectations_belonging_audit)}")
 
-  # df = pd.DataFrame(all_data)
-  # current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-  # file_name = f'report_{current_time}.xlsx'
-  # df.to_excel(file_name, index=False)
-  # print(f'Excel file {green}{file_name}{reset} created {green}successfully{reset}')
+      for k, flight in enumerate(affectations_belonging_audit):
+        print(f'{green}Processing affectation_belonging_audit {k + 1} of {len(affectations_belonging_audit)}{reset}')
+
+        all_data.append({
+          '[PDC] EMPLOYEE': item.get('EMPLOYEE'),
+          '[PDC] TSTAMP': item.get('TSTAMP'),
+          '[PDC] ID': item.get('ID'),
+          '[PDC] IDDATE': item.get('IDDATE'),
+          '[PDC] ACTION': item.get('ACTION'),
+          '[AUDIT] ORIGIN': element.get('origin'),
+          '[AUDIT] DESTINATION': element.get('destination'),
+          '[AUDIT] FLIGHT ID': element.get('flightId'),
+          '[AUDIT] DEPARTURE DATE': element.get('departureDate'),
+          '[AUDIT] ID': element.get('_id'),
+          '[AFFECTATION] ID': flight.get('_id'),
+        })
+
+  df = pd.DataFrame(all_data)
+  current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+  file_name = f'report_{current_time}.xlsx'
+  df.to_excel(file_name, index=False)
+  print(f'Excel file {green}{file_name}{reset} created {green}successfully{reset}')
